@@ -39,4 +39,9 @@ public class SelfProductServiceImpl implements ProductService {
     public GenericProductDto deleteProduct(Long id) {
         return null;
     }
+
+    @Override
+    public GenericProductDto updateProduct(Long id, GenericProductDto product) {
+        return null;
+    }
 }

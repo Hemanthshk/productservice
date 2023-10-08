@@ -1,16 +1,13 @@
 package dev.naman.productservice.controllers;
 
-import dev.naman.productservice.dtos.ExceptionDto;
 import dev.naman.productservice.dtos.GenericProductDto;
 import dev.naman.productservice.exceptions.NotFoundException;
 import dev.naman.productservice.services.ProductService;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -18,7 +15,7 @@ import java.util.List;
 public class ProductController {
 //    @Autowired
     // field injection
-    private ProductService productService;
+    private final ProductService productService;
     // ....;
     // ...;
 
@@ -48,11 +45,7 @@ public class ProductController {
             );
         }
 
-        List<GenericProductDto> genericProductDtos = new ArrayList<>();
-
-        for (GenericProductDto gpd: productDtos) {
-            genericProductDtos.add(gpd);
-        };
+        List<GenericProductDto> genericProductDtos = new ArrayList<>(productDtos);
 
 //        genericProductDtos.remove(genericProductDtos.get(0));
 
@@ -93,8 +86,8 @@ public class ProductController {
         return productService.createProduct(product);
     }
 
-    @PutMapping("{id}")
-    public void updateProductById() {
-
+    @PutMapping("/{id}")
+    public GenericProductDto updateProductById(@PathVariable Long id, @RequestBody GenericProductDto updatedProduct) {
+        return productService.updateProduct(id, updatedProduct);
     }
 }

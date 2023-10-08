@@ -4,6 +4,7 @@ import dev.naman.productservice.dtos.GenericProductDto;
 import dev.naman.productservice.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,8 +20,8 @@ import java.util.List;
  * Wrapper over FakeStore API
  */
 @Service
-public class FakeStoryProductServiceClient {
-    private RestTemplateBuilder restTemplateBuilder;
+public class FakeStoreProductServiceClient {
+    private final RestTemplateBuilder restTemplateBuilder;
 
 
     @Value("${fakestore.api.url}")
@@ -29,10 +30,10 @@ public class FakeStoryProductServiceClient {
     @Value("${fakestore.api.paths.product}")
     private String fakeStoreProductsApiPath;
 
-    private String specificProductRequestUrl ;
-    private String productRequestsBaseUrl ;
+    private final String specificProductRequestUrl ;
+    private final String productRequestsBaseUrl ;
 
-    public FakeStoryProductServiceClient(RestTemplateBuilder restTemplateBuilder,
+    public FakeStoreProductServiceClient(RestTemplateBuilder restTemplateBuilder,
                                          @Value("${fakestore.api.url}") String fakeStoreApiUrl,
                                          @Value("${fakestore.api.paths.product}") String fakeStoreProductsApiPath) {
         this.restTemplateBuilder = restTemplateBuilder;
@@ -94,4 +95,24 @@ public class FakeStoryProductServiceClient {
 
         return response.getBody();
     }
+
+    public FakeStoreProductDto updateProduct(Long id, GenericProductDto updatedProduct) {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+
+        // Create an HttpEntity with the updated product as the request body
+        HttpEntity<GenericProductDto> requestEntity = new HttpEntity<>(updatedProduct);
+
+        ResponseEntity<FakeStoreProductDto> response = restTemplate.exchange(
+                productRequestsBaseUrl + specificProductRequestUrl + "/{id}",
+                HttpMethod.PUT,
+                requestEntity,
+                FakeStoreProductDto.class,
+                id
+        );
+
+        FakeStoreProductDto fakeStoreProductDto = response.getBody();
+        return fakeStoreProductDto;
+    }
+
+
 }
